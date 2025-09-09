@@ -110,4 +110,27 @@ class AlertViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_fields = ['forest_area__name', 'alert_type', 'status', 'triggered_on']
 
+    def get_queryset(self):
+        return super().get_queryset()
     
+    def verify(self, request, pk=None):
+        alert = self.get_object()
+        if alert.status != 'Pending':
+            return Response({'error': 'Alert has already been verified or rejected.'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = VerificationSerializer(data=request.data)
+        if serializer.is_valid():
+            verification = serializer.save(alert=alert, verified_by=request.user)
+            perform_verify(verification)
+            return Response(VerificationSerializer(verification).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def reject(self, request, pk=None):
+        alert = self.get_object()
+        if alert.status != 'Pending':
+            return Response({'error': 'Alert has already been verified or rejected.'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = VerificationSerializer(data=request.data)
+        if serializer.is_valid():
+            verification = serializer.save(alert=alert, verified_by=request.user, verified=False)
+            perform_verify(verification)
+            return Response(VerificationSerializer(verification).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

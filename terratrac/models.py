@@ -12,14 +12,14 @@ class TerratracUser(User):
         return self.username
 
 class Badge(models.Model):
-    BADGE_CHOICES = {
+    BADGE_CHOICES = [
         ('Emerald Guardian', 'Emerald Guardian'),
         ('Sapphire Scout', 'Sapphire Scout'),
         ('Ruby Defender', 'Ruby Defender'),
         ('Diamond Champion', 'Diamond Champion'),
         ('Amethyst Advocate', 'Amethyst Advocate'),
         ('Pearl Pioneer', 'Pearl Pioneer'),
-    }
+    ]
     name = models.CharField(max_length=100, choices=BADGE_CHOICES)
     description = models.TextField(max_length=300)
 
@@ -48,18 +48,18 @@ class NDVIRecord(models.Model):
 
 class Alert(models.Model):
     forest_area = models.ForeignKey(ForestArea, on_delete=models.CASCADE, related_name='forest_alerts')
-    ALERT_CHOICES ={
+    ALERT_CHOICES = [
         ('Afforestation', 'afforestation'),
         ('Deforestation', 'deforestation')
-    }
+    ]
     alert_type = models.CharField(max_length=50, choices=ALERT_CHOICES, db_index=True)
     change_value = models.FloatField()
-    triggered_on = models.DateField(auto_created=True)
-    STATUS_CHOICES={
+    triggered_on = models.DateField(auto_now_add=True)
+    STATUS_CHOICES=[
         ('Verified','Verified'),
         ('Pending', 'Pending'),
         ('Rejected','Rejected')
-    }
+    ]
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, db_index=True)
 
     def __str__(self):
@@ -71,7 +71,7 @@ class CommunityReport(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     description = models.TextField(max_length=500)
-    submitted_on = models.DateField(auto_created=True)
+    submitted_on = models.DateField(auto_now_add=True)
     linked_alerts = models.ManyToManyField('Alert', related_name='linked_reports')
 
     def __str__(self):
@@ -81,7 +81,7 @@ class Verification(models.Model):
     verified_by = models.ForeignKey(TerratracUser, on_delete=models.CASCADE, related_name='user_verifications')
     alert = models.ForeignKey(Alert, on_delete=models.CASCADE)
     notes = models.TextField(max_length=500)
-    timestamp = models.DateTimeField(auto_created=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     verified = models.BooleanField(default=False)
 
     def __str__(self):
