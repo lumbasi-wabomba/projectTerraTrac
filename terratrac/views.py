@@ -134,3 +134,30 @@ class AlertViewSet(viewsets.ModelViewSet):
             perform_verify(verification)
             return Response(VerificationSerializer(verification).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class CommunityReportViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = CommunityReportSerializer
+    queryset = CommunityReport.objects.all()
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_fields = ['reported_by__username', 'latitude', 'longitude', 'submitted_on']
+
+    def get_queryset(self):
+        return super().get_queryset()
+    
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def perform_create(self, serializer):
+        if not self.request.user.is_authenticated:
+            raise PermissionError("you must be logged in to raise a report")
+        serializer.save()
+
+class NDVIRecordViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = CommunityReportSerializer
+    queryset = CommunityReport.objects.all()
+    
+    def get_queryset(self):
+        return super().get_queryset()
+    

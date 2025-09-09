@@ -41,7 +41,6 @@ class NDVIRecord(models.Model):
     forest_area = models.ForeignKey(ForestArea, on_delete=models.CASCADE, related_name='forest_NDVI_Records')
     ndvi_values = models.FloatField()
     image_taken_date = models.DateField(auto_now_add=True)
-    image_url = models.URLField(max_length=500)
 
     def __str__(self):
         return f"{self.forest_area} {self.ndvi_values}"

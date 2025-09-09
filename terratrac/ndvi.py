@@ -1,5 +1,7 @@
 import ee
 ee.Initialize(project='terratrac')
+from .models import NDVIRecord, ForestArea
+
 
 def __init__(self, lat, long, buffer_size=250):
     self.point = ee.geometry.Point(long, lat)
@@ -45,3 +47,13 @@ def change_detection(self, start1, end1, start2, end2):
         return 'Afforestation', change
     else:
         return 'No Change', change
+
+def save_ndvi_record(self, forest_area_name, ndvi_value):
+    try:
+        forest_area = ForestArea.objects.get(name=forest_area_name)
+    except ForestArea.DoesNotExist:
+        raise ValueError(f"Forest area '{forest_area_name}' does not exist.")
+    
+    ndvi_record = NDVIRecord(forest_area=forest_area, ndvi_values=ndvi_value)
+    ndvi_record.save()
+    return ndvi_record
